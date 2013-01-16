@@ -34,6 +34,24 @@ UIDatePicker *QDATEENTRY_GLOBAL_PICKER;
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    CGFloat contentViewWidth = self.contentView.frame.size.width;
+    if ([_quickformTableView.styleProvider respondsToSelector:@selector(contentWidthForElement:atIndexPath:)]) {
+        NSIndexPath *indexPath = [_quickformTableView indexForElement:_entryElement];
+        contentViewWidth = [_quickformTableView.styleProvider contentWidthForElement:_entryElement atIndexPath:indexPath];
+    }
+    
+    CGSize valueSize = CGSizeZero;
+    if (self.detailTextLabel.text!=nil) {
+        valueSize = [self.detailTextLabel.text sizeWithFont:self.detailTextLabel.font];
+    }
+    
+    self.detailTextLabel.frame = CGRectMake(contentViewWidth - valueSize.width - 10, self.detailTextLabel.frame.origin.y,
+                                            valueSize.width, self.detailTextLabel.frame.size.height);
+}
+
 + (UIDatePicker *)getPickerForDate {
     QDATEENTRY_GLOBAL_PICKER = [[UIDatePicker alloc] init];
     return QDATEENTRY_GLOBAL_PICKER;
