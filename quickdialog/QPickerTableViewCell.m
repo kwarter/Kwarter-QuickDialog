@@ -30,6 +30,21 @@ NSString * const QPickerTableViewCellIdentifier = @"QPickerTableViewCell";
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    CGFloat contentViewWidth = self.contentView.frame.size.width;
+    if ([_quickformTableView.styleProvider respondsToSelector:@selector(contentWidthForElement:atIndexPath:)]) {
+        NSIndexPath *indexPath = [_quickformTableView indexForElement:_entryElement];
+        contentViewWidth = [_quickformTableView.styleProvider contentWidthForElement:_entryElement atIndexPath:indexPath];
+    }
+    
+    CGFloat detailTextLabelOriginX = self.textLabel.frame.origin.x + self.textLabel.frame.size.width + 10;
+    self.detailTextLabel.frame = CGRectMake(detailTextLabelOriginX, self.detailTextLabel.frame.origin.y,
+                                            contentViewWidth - detailTextLabelOriginX, self.detailTextLabel.frame.size.height);
+}
+
+
 - (void)createSubviews
 {
     [super createSubviews];
