@@ -18,11 +18,10 @@
 
 @protocol QuickDialogStyleProvider
 
-- (void)cell:(UITableViewCell *)cell willAppearForElement:(QElement *)element atIndexPath:(NSIndexPath *)indexPath; 
-- (CGFloat)contentWidthForElement:(QElement *)element atIndexPath:(NSIndexPath *)indexPath;
+- (void)cell:(UITableViewCell *)cell willAppearForElement:(QElement *)element atIndexPath:(NSIndexPath *)indexPath;
 
 @optional
-
+- (CGFloat)contentWidthForElement:(QElement *)element atIndexPath:(NSIndexPath *)indexPath;
 - (void)sectionHeaderWillAppearForSection:(QSection *)section atIndex:(NSInteger)indexPath;
 - (void)sectionFooterWillAppearForSection:(QSection *)section atIndex:(NSInteger)indexPath;
 
