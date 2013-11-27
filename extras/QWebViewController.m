@@ -15,8 +15,8 @@
 #import "QWebViewController.h"
 
 @interface QWebViewController ()
-- (CGImageRef)createBackArrowImageRef;
-- (CGImageRef)createForwardArrowImageRef;
+- (UIImage *)createBackArrowImage;
+- (UIImage *)createForwardArrowImage;
 
 
 @end
@@ -46,8 +46,8 @@
     _webView.scalesPageToFit = YES;
     self.view = _webView;
 
-    UIImage *backImage = [[UIImage alloc] initWithCGImage:[self createBackArrowImageRef]];
-    UIImage *forwardImage = [[UIImage alloc] initWithCGImage:[self createForwardArrowImageRef]];
+    UIImage *backImage = [self createBackArrowImage];
+    UIImage *forwardImage = [self createForwardArrowImage];
     _btBack = [[UIBarButtonItem alloc] initWithImage:backImage style:UIBarButtonItemStylePlain target:self action:@selector(actionRewind)];
     _btForward = [[UIBarButtonItem alloc] initWithImage:forwardImage style:UIBarButtonItemStylePlain target:self action:@selector(actionForward)];
 
@@ -81,6 +81,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     [_webView stopLoading];
     [self.navigationController setToolbarHidden:_previousToolbarState animated:YES];
     _webView = nil;
@@ -119,7 +120,8 @@
         self.toolbarItems = nil;
 	}
 	else {
-		[_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
+        NSURL *url = [_url hasPrefix:@"/"]? [NSURL fileURLWithPath:_url] : [NSURL URLWithString:_url];
+        [_webView loadRequest:[NSURLRequest requestWithURL:url]];
 		self.navigationController.toolbarHidden = NO;
 
         self.toolbarItems = _urlToolbarItems;
@@ -161,17 +163,11 @@
 }
 
 
-- (CGContextRef)createContext
+- (UIImage *)createBackArrowImage
 {
-   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-   CGContextRef context = CGBitmapContextCreate(nil,27,27,8,0, colorSpace,kCGImageAlphaPremultipliedLast);
-   CFRelease(colorSpace);
-   return context;
-}
-
-- (CGImageRef)createBackArrowImageRef
-{
-   CGContextRef context = [self createContext];
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGContextRef context = CGBitmapContextCreate(nil,27,27,8,0, colorSpace,(CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+	CFRelease(colorSpace);
    CGColorRef fillColor = [[UIColor blackColor] CGColor];
    CGContextSetFillColor(context, (CGFloat *) CGColorGetComponents(fillColor));
    CGContextBeginPath(context);
@@ -182,12 +178,17 @@
    CGContextFillPath(context);
    CGImageRef image = CGBitmapContextCreateImage(context);
    CGContextRelease(context);
-   return image;
+   UIImage *ret = [UIImage imageWithCGImage:image];
+   CGImageRelease(image);
+    
+   return ret;
 }
 
-- (CGImageRef)createForwardArrowImageRef
+- (UIImage *)createForwardArrowImage
 {
-   CGContextRef context = [self createContext];
+   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+   CGContextRef context = CGBitmapContextCreate(nil,27,27,8,0, colorSpace,(CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+   CFRelease(colorSpace);
    CGColorRef fillColor = [[UIColor blackColor] CGColor];
    CGContextSetFillColor(context, (CGFloat *) CGColorGetComponents(fillColor));
    CGContextBeginPath(context);
@@ -198,7 +199,10 @@
    CGContextFillPath(context);
    CGImageRef image = CGBitmapContextCreateImage(context);
    CGContextRelease(context);
-   return image;
+   UIImage *ret = [UIImage imageWithCGImage:image];
+   CGImageRelease(image);
+    
+   return ret;
 }
 
 @end

@@ -15,15 +15,14 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "QRootElement.h"
+#import "QEntryElement.h"
 
 @interface QImageElement : QEntryElement
 
 @property (nonatomic, strong) UIImage *imageValue;
 @property (nonatomic, strong) NSString *imageValueNamed;
 @property (nonatomic, assign) float imageMaxLength;
-@property(nonatomic) enum UIImagePickerControllerSourceType source;
-
+@property(nonatomic) UIImagePickerControllerSourceType source;
 
 - (QImageElement *)initWithTitle:(NSString *)title detailImage:(UIImage *)image;
 

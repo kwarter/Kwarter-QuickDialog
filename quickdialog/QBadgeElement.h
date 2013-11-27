@@ -15,6 +15,10 @@
 #import "QuickDialogTableView.h"
 #import "QLabelElement.h"
 
+/**
+  QBadgeElement: like the label cell, but the value is displayed with a badge, like the Mail app.
+*/
+
 @interface QBadgeElement : QLabelElement {
 
 @private
@@ -27,6 +31,6 @@
 @property(nonatomic, retain) UIColor *badgeColor;
 @property(nonatomic, strong) NSString *badge;
 
-
 - (QBadgeElement *)initWithTitle:(NSString *)title value:(NSString *)value;
+
 @end

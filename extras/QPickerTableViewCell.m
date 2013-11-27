@@ -8,6 +8,7 @@
 
 #import "QPickerTableViewCell.h"
 #import "QuickDialog.h"
+#import "QPickerElement.h"
 
 NSString * const QPickerTableViewCellIdentifier = @"QPickerTableViewCell";
 
@@ -29,21 +30,6 @@ NSString * const QPickerTableViewCellIdentifier = @"QPickerTableViewCell";
     
     return self;
 }
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    CGFloat contentViewWidth = self.contentView.frame.size.width;
-    if ([_quickformTableView.styleProvider respondsToSelector:@selector(contentWidthForElement:atIndexPath:)]) {
-        NSIndexPath *indexPath = [_quickformTableView indexForElement:_entryElement];
-        contentViewWidth = [_quickformTableView.styleProvider contentWidthForElement:_entryElement atIndexPath:indexPath];
-    }
-    
-    CGFloat detailTextLabelOriginX = self.textLabel.frame.origin.x + self.textLabel.frame.size.width + 10;
-    self.detailTextLabel.frame = CGRectMake(detailTextLabelOriginX, self.detailTextLabel.frame.origin.y,
-                                            contentViewWidth - detailTextLabelOriginX, self.detailTextLabel.frame.size.height);
-}
-
 
 - (void)createSubviews
 {
@@ -124,12 +110,9 @@ NSString * const QPickerTableViewCellIdentifier = @"QPickerTableViewCell";
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
-    if (self.pickerElement.onValueChanged != nil) {
-        self.pickerElement.onValueChanged(self.pickerElement);
-    }
-
     self.pickerElement.value = [self getPickerViewValue];
     [self prepareForElement:_entryElement inTableView:_quickformTableView];
+    [self.pickerElement handleEditingChanged];
 }
 
 #pragma mark - Getting/setting value from UIPickerView
@@ -160,7 +143,9 @@ NSString * const QPickerTableViewCellIdentifier = @"QPickerTableViewCell";
     {
         id componentValue = [componentsValues objectAtIndex:(NSUInteger) componentIndex];
         NSInteger rowIndex = [[self.pickerElement.items objectAtIndex:componentIndex] indexOfObject:componentValue];
-        [_pickerView selectRow:rowIndex inComponent:componentIndex animated:YES];
+        if (rowIndex != NSNotFound) {
+            [_pickerView selectRow:rowIndex inComponent:componentIndex animated:YES];
+        }
     }
 }
 

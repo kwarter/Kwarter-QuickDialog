@@ -15,7 +15,7 @@
 #import "QImageTableViewCell.h"
 #import "QImageElement.h"
 
-static NSString *kImageValueObservanceContext = @"imageValue";
+static NSString *kDetailImageValueObservanceContext = @"imageValue";
 
 @interface QImageTableViewCell ()
 @property (nonatomic, retain) QImageElement *imageElement;
@@ -30,10 +30,10 @@ static NSString *kImageValueObservanceContext = @"imageValue";
 - (QImageTableViewCell *)init {
     self = [self initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"QuickformImageElement"];
     if (self){
-        self.imageValueViewMargin = 2.f;
         [self createSubviews];
+        self.imageValueViewMargin = 2.f;
         self.selectionStyle = UITableViewCellSelectionStyleBlue;
-        [self addObserver:self forKeyPath:@"imageElement.imageValue" options:0 context:(__bridge void *)(kImageValueObservanceContext)];
+        [self addObserver:self forKeyPath:@"imageElement.imageValue" options:0 context:(__bridge void *)(kDetailImageValueObservanceContext)];
     }
     return self;
 }
@@ -52,10 +52,10 @@ static NSString *kImageValueObservanceContext = @"imageValue";
     [self setNeedsLayout];
 }
 
-- (void)prepareForElement:(QImageElement *)element inTableView:(QuickDialogTableView *)tableView {
+- (void)prepareForElement:(QEntryElement *)element inTableView:(QuickDialogTableView *)tableView {
     [super prepareForElement:element inTableView:tableView];
     
-    self.imageElement = element;
+    self.imageElement = (QImageElement *)element;
     
     self.imageView.image = self.imageElement.image;
     self.imageValueView.image = self.imageElement.imageValue;
@@ -63,20 +63,14 @@ static NSString *kImageValueObservanceContext = @"imageValue";
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self recalculateImageValueViewPosition];
+    [self recalculateDetailImageViewPosition];
 }
 
-- (void)recalculateImageValueViewPosition {
-    
-    CGFloat contentViewWidth = self.contentView.frame.size.width;
-    if ([_quickformTableView.styleProvider respondsToSelector:@selector(contentWidthForElement:atIndexPath:)]) {
-        NSIndexPath *indexPath = [_quickformTableView indexForElement:_entryElement];
-        contentViewWidth = [_quickformTableView.styleProvider contentWidthForElement:_entryElement atIndexPath:indexPath];
-    }
+- (void)recalculateDetailImageViewPosition {
     
     CGFloat imageSize = self.contentView.frame.size.height - 2 * self.imageValueViewMargin;
     
-    _imageValueView.frame = CGRectMake(contentViewWidth - self.imageValueViewMargin - imageSize,
+    _imageValueView.frame = CGRectMake(self.contentView.frame.size.width - self.imageValueViewMargin - imageSize,
                                        self.imageValueViewMargin, imageSize, imageSize);
     _imageElement.parentSection.entryPosition = _imageValueView.frame;
     
@@ -87,7 +81,7 @@ static NSString *kImageValueObservanceContext = @"imageValue";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (context == (__bridge void *)(kImageValueObservanceContext)) {
+    if (context == (__bridge void *)(kDetailImageValueObservanceContext)) {
         self.imageValueView.image = self.imageElement.imageValue;
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -95,7 +89,7 @@ static NSString *kImageValueObservanceContext = @"imageValue";
 }
 
 - (void)dealloc {
-    [self removeObserver:self forKeyPath:@"imageElement.imageValue" context:(__bridge void *)(kImageValueObservanceContext)];
+    [self removeObserver:self forKeyPath:@"imageElement.imageValue" context:(__bridge void *)(kDetailImageValueObservanceContext)];
 }
 
 @end

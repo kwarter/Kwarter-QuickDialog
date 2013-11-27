@@ -38,6 +38,7 @@
         self.returnKeyType = UIReturnKeyDefault;
         self.enablesReturnKeyAutomatically = NO;
         self.secureTextEntry = NO;
+        self.maxLength = 0;
     }
     return self;
 }
@@ -88,12 +89,16 @@
 }
 
 - (BOOL)canTakeFocus {
-	if (self.hidden) {
-		return NO;
-	}
-	else {
-		return YES;
-	}
+    return self.enabled && !self.hidden;
+}
+
+- (void)handleEditingChanged:(QEntryTableViewCell *)cell
+{
+    if(self.delegate && [self.delegate respondsToSelector:@selector(QEntryEditingChangedForElement:andCell:)]){
+        [self.delegate QEntryEditingChangedForElement:self andCell:cell];
+    }
+
+    [self handleEditingChanged];
 }
 
 #pragma mark - UITextInputTraits

@@ -16,7 +16,7 @@
 
 @class QRootElement;
 
-@interface SampleDataBuilder : NSObject {
+@interface SampleDataBuilder : NSObject<QuickDialogEntryElementDelegate> {
 
 }
 
